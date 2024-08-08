@@ -63,7 +63,7 @@ This project includes two distinct pipelines for analyzing research papers:
 Below are screenshots showing the outputs of both pipelines for the query "Tell me all the key concepts mentioned in the paper":
 
 **Pipeline 1 (LangChain-based):**
-![pipeline_1.PNG](pipeline_1.PNG)
+![pipeline_1.PNG](examples/pipeline_1.PNG)
 
 **Pipeline 2 (ChromaDB-based):**
-![pipeline_2.PNG](pipeline_2.PNG)
+![pipeline_2.PNG](examples/pipeline_2.PNG)
