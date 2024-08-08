@@ -75,7 +75,7 @@ def user_input(user_question):
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
     # Load the FAISS index from local storage
-    new_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
+    new_db = FAISS.load_local("../faiss_index", embeddings, allow_dangerous_deserialization=True)
 
     # Perform a similarity search in the FAISS index based on the user's question
     docs = new_db.similarity_search(user_question)

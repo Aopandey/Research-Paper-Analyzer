@@ -34,7 +34,7 @@ streamlit run src/pipeline_2.py  # For Pipeline 2 (ChromaDB-based)
 ## Example Query
 **Query :** "Tell me all the key concepts mentioned in the paper."
 
-### Pipeline Differences
+## Pipeline Differences
 This project includes two distinct pipelines for analyzing research papers:
 
 #### Pipeline 1 (LangChain-based with FAISS)-
@@ -52,13 +52,13 @@ This project includes two distinct pipelines for analyzing research papers:
 **Output:** The results from this pipeline are more concise, focusing on the core aspects of the research paper, specifically on technical details like model architecture and specific AI techniques.
 
 
-### Observations:
+## Observations:
 
 **Pipeline 1** provides a broader context and more comprehensive insights, which is useful when looking for a general understanding or when the paper covers diverse topics, as seen in the detailed summary of Llama 3.
 
 **Pipeline 2** offers more targeted results, which can be beneficial when the focus is on specific technical details or when querying very specific concepts, such as the focus on the Transformer model and its components.
 
-### Example
+## Example
 
 Below are screenshots showing the outputs of both pipelines for the query "Tell me all the key concepts mentioned in the paper":
 
