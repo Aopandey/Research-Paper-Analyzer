@@ -14,11 +14,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Retrieve the Google API key from environment variables
-os.getenv("GOOGLE_API_KEY")
+google_api_key = os.getenv("GOOGLE_API_KEY")
 
 # Configure the Generative AI API with the retrieved API key
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
+genai.configure(api_key=google_api_key)
 
 # Function to extract text from uploaded PDF files
 def get_pdf_text(pdf_docs):
@@ -30,21 +29,18 @@ def get_pdf_text(pdf_docs):
             text += page.extract_text()
     return text
 
-
 # Function to split the extracted text into manageable chunks
 def get_text_chunks(text):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=1000)
     chunks = text_splitter.split_text(text)
     return chunks
 
-
 # Function to generate vector embeddings from text chunks and store them in a FAISS index
 def get_vector_store(text_chunks):
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
     # Save the FAISS index locally for later retrieval
-    vector_store.save_local("faiss_index")
-
+    vector_store.save_local("../faiss_index")
 
 # Function to create a conversational chain for answering questions based on context
 def get_conversational_chain():
@@ -54,7 +50,6 @@ def get_conversational_chain():
     provided context just say, "answer is not available in the context", don't provide the wrong answer\n\n
     Context:\n {context}?\n
     Question: \n{question}\n
-
     Answer:
     """
 
@@ -68,7 +63,6 @@ def get_conversational_chain():
     chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
 
     return chain
-
 
 # Function to handle user input and generate a response based on the FAISS index
 def user_input(user_question):
@@ -86,15 +80,20 @@ def user_input(user_question):
     # Generate a response based on the retrieved documents and user question
     response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
 
-    # Output the response in the Streamlit app
-    print(response)
-    st.write("Reply: ", response["output_text"])
+    # Add the question and response to the chat history
+    st.session_state.chat_history.append((user_question, response["output_text"]))
 
+    # Output the response in the Streamlit app
+    st.write("Reply: ", response["output_text"])
 
 # Main function to define the Streamlit app's interface
 def main():
     st.set_page_config("Chat PDF")  # Set the title of the Streamlit app
     st.header("Chat with PDF using Gemini (Langchain)")  # Display the app header
+
+    # Initialize chat history if not already done
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
 
     # Text input for the user to ask a question
     user_question = st.text_input("Ask a Question from the PDF Files")
@@ -102,6 +101,13 @@ def main():
     # If a question is provided, process the input and generate a response
     if user_question:
         user_input(user_question)
+
+    # Display chat history
+    st.subheader("Chat History")
+    for i, (question, answer) in enumerate(st.session_state.chat_history):
+        st.write(f"Q{i+1}: {question}")
+        st.write(f"A{i+1}: {answer}")
+        st.write("----")
 
     # Sidebar for file upload and processing options
     with st.sidebar:
@@ -118,7 +124,9 @@ def main():
                 get_vector_store(text_chunks)
                 st.success("Done")  # Indicate that processing is complete
 
-
 # Entry point to start the Streamlit app
 if __name__ == "__main__":
     main()
+
+
+

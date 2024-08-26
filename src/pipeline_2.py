@@ -91,7 +91,7 @@ def create_prompt_for_gemini(query, context):
     prompt = f"""
     You are a helpful agent that answers questions using the text from the context below.
     Both the question and the context is shared with you and you should answer the
-    question basis the context. If the context does not have enough information
+    question based on the context. If the context does not have enough information
     for you to answer the question correctly, inform about the absence of relevant
     context as part of your answer.
 
@@ -116,6 +116,10 @@ def main():
     st.set_page_config("Chat PDF")  # Set the title of the Streamlit app
     st.header("Chat with PDF using Gemini (ChromaDB)")  # Display the app header
 
+    # Initialize chat history if not already done
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+
     # Input box for users to ask questions about the PDF content
     user_question = st.text_input("Ask a Question from the PDF Files")
 
@@ -124,7 +128,18 @@ def main():
         context = find_relevant_context(user_question, collection)
         prompt = create_prompt_for_gemini(user_question, context)
         answer = generate_answer_from_gemini(prompt)
+
+        # Store the question and answer in the session state chat history
+        st.session_state.chat_history.append((user_question, answer.text))
+
         st.write("Reply: ", answer.text)  # Display the answer in the app
+
+    # Display chat history
+    st.subheader("Chat History")
+    for i, (question, answer) in enumerate(st.session_state.chat_history):
+        st.write(f"Q{i + 1}: {question}")
+        st.write(f"A{i + 1}: {answer}")
+        st.write("----")
 
     with st.sidebar:
         st.title("Menu:")
@@ -156,3 +171,4 @@ def main():
 # Entry point to start the Streamlit app
 if __name__ == "__main__":
     main()
+
